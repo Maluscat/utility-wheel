@@ -1,0 +1,17 @@
+// main: ./main.less
+
+@border-width: 2px;
+@border-style: @border-width solid var(--utilWheel-border-color);
+
+.getGradient(@color) {
+  @gradient-stop: 21em;
+
+  @return: radial-gradient(at 0 0, @color, transparent @gradient-stop);
+}
+
+.rotateSection(@amount) {
+  transform: rotate(@amount);
+}
+.translateContent(@tranX, @tranY) {
+  transform: translate(-50%, -50%) translate(@tranX, @tranY);
+}

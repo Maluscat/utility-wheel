@@ -1,0 +1,87 @@
+// out: ../main.css
+@import (reference) 'vars.less';
+
+:root {
+  --utilWheel-center-color: hsl(0, 0%, 8%);
+  --utilWheel-border-color: hsl(0, 0%, 44%);
+  --utilWheel-section-color: hsl(0, 0%, 19%);
+
+  --utilWheel-center-size: 6em;
+  --utilWheel-wheel-size: 27em;
+  --utilWheel-content-size: 21em;
+}
+
+.utility-wheel {
+  position: absolute;
+  &.hidden {
+    display: none;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .section-target, .section-content, .circle-indicator {
+    position: absolute;
+  }
+
+  .section-target {
+    width: var(--utilWheel-wheel-size);
+    height: var(--utilWheel-wheel-size);
+    transform-origin: top left;
+    border-image: .getGradient(var(--utilWheel-border-color))[] 1;
+    &:hover {
+      background: .getGradient(var(--utilWheel-section-color))[];
+    }
+
+    &.left, &.bottom {
+      border-left: @border-style;
+    }
+    &.right, &.bottom {
+      border-top: @border-style;
+    }
+
+    &.top {
+      .rotateSection(-135deg);
+    }
+    &.right {
+      .rotateSection(-45deg);
+    }
+    &.bottom {
+      .rotateSection(45deg);
+    }
+    &.left {
+      .rotateSection(135deg);
+    }
+  }
+
+  .section-content {
+    pointer-events: none;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    &.top {
+      .translateContent(0, -50%);
+    }
+    &.right {
+      .translateContent(50%, 0);
+    }
+    &.bottom {
+      .translateContent(0, 50%);
+    }
+    &.left {
+      .translateContent(-50%, 0);
+    }
+  }
+
+  .circle-indicator {
+    border-radius: 10rem;
+    width: var(--utilWheel-center-size);
+    height: var(--utilWheel-center-size);
+    background-color: var(--utilWheel-center-color);
+    border: @border-style;
+    transform: translate(-50%, -50%);
+  }
+}

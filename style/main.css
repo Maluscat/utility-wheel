@@ -1,0 +1,79 @@
+:root {
+  --utilWheel-center-color: hsl(0, 0%, 8%);
+  --utilWheel-border-color: hsl(0, 0%, 44%);
+  --utilWheel-section-color: hsl(0, 0%, 19%);
+  --utilWheel-center-size: 6em;
+  --utilWheel-wheel-size: 27em;
+  --utilWheel-content-size: 21em;
+}
+.utility-wheel {
+  position: absolute;
+}
+.utility-wheel.hidden {
+  display: none;
+}
+.utility-wheel * {
+  box-sizing: border-box;
+}
+.utility-wheel .section-target,
+.utility-wheel .section-content,
+.utility-wheel .circle-indicator {
+  position: absolute;
+}
+.utility-wheel .section-target {
+  width: var(--utilWheel-wheel-size);
+  height: var(--utilWheel-wheel-size);
+  transform-origin: top left;
+  border-image: radial-gradient(at 0 0, var(--utilWheel-border-color), transparent 21em) 1;
+}
+.utility-wheel .section-target:hover {
+  background: radial-gradient(at 0 0, var(--utilWheel-section-color), transparent 21em);
+}
+.utility-wheel .section-target.left,
+.utility-wheel .section-target.bottom {
+  border-left: 2px solid var(--utilWheel-border-color);
+}
+.utility-wheel .section-target.right,
+.utility-wheel .section-target.bottom {
+  border-top: 2px solid var(--utilWheel-border-color);
+}
+.utility-wheel .section-target.top {
+  transform: rotate(-135deg);
+}
+.utility-wheel .section-target.right {
+  transform: rotate(-45deg);
+}
+.utility-wheel .section-target.bottom {
+  transform: rotate(45deg);
+}
+.utility-wheel .section-target.left {
+  transform: rotate(135deg);
+}
+.utility-wheel .section-content {
+  pointer-events: none;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.utility-wheel .section-content.top {
+  transform: translate(-50%, -50%) translate(0, -50%);
+}
+.utility-wheel .section-content.right {
+  transform: translate(-50%, -50%) translate(50%, 0);
+}
+.utility-wheel .section-content.bottom {
+  transform: translate(-50%, -50%) translate(0, 50%);
+}
+.utility-wheel .section-content.left {
+  transform: translate(-50%, -50%) translate(-50%, 0);
+}
+.utility-wheel .circle-indicator {
+  border-radius: 10rem;
+  width: var(--utilWheel-center-size);
+  height: var(--utilWheel-center-size);
+  background-color: var(--utilWheel-center-color);
+  border: 2px solid var(--utilWheel-border-color);
+  transform: translate(-50%, -50%);
+}
