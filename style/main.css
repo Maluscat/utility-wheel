@@ -8,6 +8,8 @@
 }
 .utility-wheel {
   position: absolute;
+  left: 0;
+  top: 0;
 }
 .utility-wheel.uw-hidden {
   display: none;
