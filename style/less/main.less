@@ -13,7 +13,7 @@
 
 .utility-wheel {
   position: absolute;
-  &.hidden {
+  &.uw-hidden {
     display: none;
   }
 
@@ -21,11 +21,11 @@
     box-sizing: border-box;
   }
 
-  .section-target, .section-content, .circle-indicator {
+  .uw-section-target, .uw-section-content, .uw-circle-indicator {
     position: absolute;
   }
 
-  .section-target {
+  .uw-section-target {
     width: var(--utilWheel-wheel-size);
     height: var(--utilWheel-wheel-size);
     transform-origin: top left;
@@ -34,49 +34,49 @@
       background: .getGradient(var(--utilWheel-section-color))[];
     }
 
-    &.left, &.bottom {
+    &.uw-left, &.uw-bottom {
       border-left: @border-style;
     }
-    &.right, &.bottom {
+    &.uw-right, &.uw-bottom {
       border-top: @border-style;
     }
 
-    &.top {
+    &.uw-top {
       .rotateSection(-135deg);
     }
-    &.right {
+    &.uw-right {
       .rotateSection(-45deg);
     }
-    &.bottom {
+    &.uw-bottom {
       .rotateSection(45deg);
     }
-    &.left {
+    &.uw-left {
       .rotateSection(135deg);
     }
   }
 
-  .section-content {
+  .uw-section-content {
     pointer-events: none;
     user-select: none;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    &.top {
+    &.uw-top {
       .translateContent(0, -50%);
     }
-    &.right {
+    &.uw-right {
       .translateContent(50%, 0);
     }
-    &.bottom {
+    &.uw-bottom {
       .translateContent(0, 50%);
     }
-    &.left {
+    &.uw-left {
       .translateContent(-50%, 0);
     }
   }
 
-  .circle-indicator {
+  .uw-circle-indicator {
     border-radius: 10rem;
     width: var(--utilWheel-center-size);
     height: var(--utilWheel-center-size);

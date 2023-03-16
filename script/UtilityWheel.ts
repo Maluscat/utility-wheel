@@ -24,16 +24,16 @@ class UtilityWheel {
     this.invokeButton = invokeButton;
 
     this.#sectionsTarget = {
-      top: element.querySelector('.section-target.top')!,
-      right: element.querySelector('.section-target.right')!,
-      bottom: element.querySelector('.section-target.bottom')!,
-      left: element.querySelector('.section-target.left')!,
+      top: element.querySelector('.uw-section-target.uw-top')!,
+      right: element.querySelector('.uw-section-target.uw-right')!,
+      bottom: element.querySelector('.uw-section-target.uw-bottom')!,
+      left: element.querySelector('.uw-section-target.uw-left')!,
     };
     this.#sectionsContent = {
-      top: element.querySelector('.section-content.top')!,
-      right: element.querySelector('.section-content.right')!,
-      bottom: element.querySelector('.section-content.bottom')!,
-      left: element.querySelector('.section-content.left')!,
+      top: element.querySelector('.uw-section-content.uw-top')!,
+      right: element.querySelector('.uw-section-content.uw-right')!,
+      bottom: element.querySelector('.uw-section-content.uw-bottom')!,
+      left: element.querySelector('.uw-section-content.uw-left')!,
     };
 
     this.pointerDown = this.pointerDown.bind(this);
@@ -57,11 +57,11 @@ class UtilityWheel {
 
   // ---- Visibility handling ----
   invoke(x: number, y: number) {
-    this.element.classList.remove('hidden');
+    this.element.classList.remove('uw-hidden');
     this.element.style.transform = `translate(${x}px, ${y}px)`;
   }
   hide() {
-    this.element.classList.add('hidden');
+    this.element.classList.add('uw-hidden');
   }
 
   // ---- Events ----
