@@ -22,11 +22,14 @@ class UtilityWheel {
             left: element.querySelector('.uw-section-content.uw-left'),
         };
         this.pointerDown = this.pointerDown.bind(this);
+        this.preventContextMenu = this.preventContextMenu.bind(this);
         this.invoke = this.invoke.bind(this);
         this.hide = this.hide.bind(this);
         // @ts-ignore
         target.addEventListener('pointerdown', this.pointerDown);
-        target.addEventListener('pointerup', this.hide);
+        window.addEventListener('pointerup', this.hide);
+        // @ts-ignore
+        target.addEventListener('contextmenu', this.preventContextMenu);
         for (const [side, section] of Object.entries(this.#sectionsTarget)) {
             section.addEventListener('pointerup', this.sectionUp.bind(this, side));
         }
@@ -45,6 +48,11 @@ class UtilityWheel {
         this.element.classList.add('uw-hidden');
     }
     // ---- Events ----
+    preventContextMenu(e) {
+        if (e.button === this.invokeButton) {
+            e.preventDefault();
+        }
+    }
     pointerDown(e) {
         if (e.button === this.invokeButton) {
             this.invoke(e.clientX, e.clientY);
