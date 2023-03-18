@@ -67,9 +67,11 @@ class UtilityWheel {
   invoke(x: number, y: number) {
     this.element.classList.remove('uw-hidden');
     this.element.style.transform = `translate(${x}px, ${y}px)`;
+    this.invokeEvent('invoke');
   }
   hide() {
     this.element.classList.add('uw-hidden');
+    this.invokeEvent('hide');
   }
 
   // ---- Event handling ----
@@ -80,6 +82,12 @@ class UtilityWheel {
   removeEvent(index: number) {
     for (const events of Object.values(this.#events)) {
       delete events[index];
+    }
+  }
+
+  invokeEvent(type: EventType, ...args: any[]) {
+    for (const callback of Object.values(this.#events[type])) {
+      callback(...args);
     }
   }
 
