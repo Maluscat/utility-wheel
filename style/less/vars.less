@@ -4,9 +4,7 @@
 @border-style: @border-width solid var(--utilWheel-border-color);
 
 .getGradient(@color) {
-  @gradient-stop: 21em;
-
-  @return: radial-gradient(at 0 0, @color, transparent @gradient-stop);
+  @return: radial-gradient(at 0 0, @color, transparent var(--utilWheel-gradient-stop));
 }
 
 .rotateSection(@amount) {

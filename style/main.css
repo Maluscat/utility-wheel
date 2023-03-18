@@ -4,6 +4,7 @@
   --utilWheel-section-color: hsl(0, 0%, 19%);
   --utilWheel-center-size: 6em;
   --utilWheel-wheel-size: 27em;
+  --utilWheel-gradient-stop: 21em;
 }
 .utility-wheel {
   position: absolute;
@@ -25,10 +26,10 @@
   width: var(--utilWheel-wheel-size);
   height: var(--utilWheel-wheel-size);
   transform-origin: top left;
-  border-image: radial-gradient(at 0 0, var(--utilWheel-border-color), transparent 21em) 1;
+  border-image: radial-gradient(at 0 0, var(--utilWheel-border-color), transparent var(--utilWheel-gradient-stop)) 1;
 }
 .utility-wheel .uw-section-target:hover {
-  background: radial-gradient(at 0 0, var(--utilWheel-section-color), transparent 21em);
+  background: radial-gradient(at 0 0, var(--utilWheel-section-color), transparent var(--utilWheel-gradient-stop));
 }
 .utility-wheel .uw-section-target.uw-left,
 .utility-wheel .uw-section-target.uw-bottom {
