@@ -30,6 +30,7 @@ class UtilityWheel {
         this.pointerDown = this.pointerDown.bind(this);
         this.pointerUp = this.pointerUp.bind(this);
         this.preventContextMenu = this.preventContextMenu.bind(this);
+        this.keyDown = this.keyDown.bind(this);
         // @ts-ignore
         target.addEventListener('pointerdown', this.pointerDown);
         // @ts-ignore
@@ -77,15 +78,26 @@ class UtilityWheel {
     pointerDown(e) {
         if (e.button === this.invokeButton) {
             window.addEventListener('pointerup', this.pointerUp);
+            window.addEventListener('keydown', this.keyDown);
             this.invoke(e.clientX, e.clientY);
         }
     }
     pointerUp(e) {
-        window.removeEventListener('pointerup', this.pointerUp);
-        this.hide();
+        this.#hideAndRemoveEvents();
         this.invokeEvent('pointerUp', e);
+    }
+    keyDown(e) {
+        if (e.key === 'Escape') {
+            this.#hideAndRemoveEvents();
+        }
     }
     sectionUp(side) {
         this.callbacks[side]?.();
+    }
+    // ---- Event helpers ----
+    #hideAndRemoveEvents() {
+        window.removeEventListener('pointerup', this.pointerUp);
+        window.removeEventListener('keydown', this.keyDown);
+        this.hide();
     }
 }
