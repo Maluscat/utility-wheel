@@ -4,6 +4,11 @@ class UtilityWheel {
     #sectionsTarget;
     #sectionsContent;
     callbacks = {};
+    #eventCounter = 0;
+    #events = {
+        invoke: {},
+        hide: {},
+    };
     invokeButton;
     element;
     constructor(element, { target = window, invokeButton = 2 } = {}) {
@@ -46,6 +51,16 @@ class UtilityWheel {
     }
     hide() {
         this.element.classList.add('uw-hidden');
+    }
+    // ---- Event handling ----
+    addEvent(type, callback) {
+        this.#events[type][this.#eventCounter++] = callback;
+        return this.#eventCounter - 1;
+    }
+    removeEvent(index) {
+        for (const events of Object.values(this.#events)) {
+            delete events[index];
+        }
     }
     // ---- Events ----
     preventContextMenu(e) {

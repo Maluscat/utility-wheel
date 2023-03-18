@@ -4,16 +4,21 @@ interface ConfigOptions {
   invokeButton: number;
 };
 
-type Section<T> = {
-  [key in SectionSide]: T;
-};
+type Section<T> = Record<SectionSide, T>;
 
 type SectionSide = 'top' | 'right' | 'bottom' | 'left';
+type EventType = 'invoke' | 'hide';
 
 class UtilityWheel {
   #sectionsTarget: Section<HTMLElement>;
   #sectionsContent: Section<HTMLElement>;
   callbacks: Partial<Section<Function>> = {};
+
+  #eventCounter = 0;
+  #events: Record<EventType, Record<number, Function>> = {
+    invoke: {},
+    hide: {},
+  };
 
   invokeButton;
 
@@ -65,6 +70,17 @@ class UtilityWheel {
   }
   hide() {
     this.element.classList.add('uw-hidden');
+  }
+
+  // ---- Event handling ----
+  addEvent(type: EventType, callback: Function) {
+    this.#events[type][this.#eventCounter++] = callback;
+    return this.#eventCounter - 1;
+  }
+  removeEvent(index: number) {
+    for (const events of Object.values(this.#events)) {
+      delete events[index];
+    }
   }
 
   // ---- Events ----
