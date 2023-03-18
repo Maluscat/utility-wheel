@@ -4,7 +4,6 @@
   --utilWheel-section-color: hsl(0, 0%, 19%);
   --utilWheel-center-size: 6em;
   --utilWheel-wheel-size: 27em;
-  --utilWheel-content-size: 21em;
 }
 .utility-wheel {
   position: absolute;
