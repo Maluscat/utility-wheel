@@ -116,8 +116,8 @@ class UtilityWheel {
     }
   }
 
-  sectionUp(side: SectionSide) {
-    this.callbacks[side]?.();
+  sectionUp(side: SectionSide, e: PointerEvent) {
+    this.callbacks[side]?.(e);
   }
 
   // ---- Event helpers ----

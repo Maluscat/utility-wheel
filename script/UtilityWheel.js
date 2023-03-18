@@ -91,8 +91,8 @@ class UtilityWheel {
             this.#hideAndRemoveEvents();
         }
     }
-    sectionUp(side) {
-        this.callbacks[side]?.();
+    sectionUp(side, e) {
+        this.callbacks[side]?.(e);
     }
     // ---- Event helpers ----
     #hideAndRemoveEvents() {
