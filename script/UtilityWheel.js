@@ -8,6 +8,7 @@ class UtilityWheel {
     #events = {
         invoke: {},
         hide: {},
+        pointerUp: {},
     };
     invokeButton;
     element;
@@ -27,12 +28,10 @@ class UtilityWheel {
             left: element.querySelector('.uw-section-content.uw-left'),
         };
         this.pointerDown = this.pointerDown.bind(this);
+        this.pointerUp = this.pointerUp.bind(this);
         this.preventContextMenu = this.preventContextMenu.bind(this);
-        this.invoke = this.invoke.bind(this);
-        this.hide = this.hide.bind(this);
         // @ts-ignore
         target.addEventListener('pointerdown', this.pointerDown);
-        window.addEventListener('pointerup', this.hide);
         // @ts-ignore
         target.addEventListener('contextmenu', this.preventContextMenu);
         for (const [side, section] of Object.entries(this.#sectionsTarget)) {
@@ -77,8 +76,14 @@ class UtilityWheel {
     }
     pointerDown(e) {
         if (e.button === this.invokeButton) {
+            window.addEventListener('pointerup', this.pointerUp);
             this.invoke(e.clientX, e.clientY);
         }
+    }
+    pointerUp(e) {
+        window.removeEventListener('pointerup', this.pointerUp);
+        this.hide();
+        this.invokeEvent('pointerUp', e);
     }
     sectionUp(side) {
         this.callbacks[side]?.();

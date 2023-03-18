@@ -7,7 +7,7 @@ interface ConfigOptions {
 type Section<T> = Record<SectionSide, T>;
 
 type SectionSide = 'top' | 'right' | 'bottom' | 'left';
-type EventType = 'invoke' | 'hide';
+type EventType = 'invoke' | 'hide' | 'pointerUp';
 
 class UtilityWheel {
   #sectionsTarget: Section<HTMLElement>;
@@ -18,6 +18,7 @@ class UtilityWheel {
   #events: Record<EventType, Record<number, Function>> = {
     invoke: {},
     hide: {},
+    pointerUp: {},
   };
 
   invokeButton;
@@ -42,13 +43,11 @@ class UtilityWheel {
     };
 
     this.pointerDown = this.pointerDown.bind(this);
+    this.pointerUp = this.pointerUp.bind(this);
     this.preventContextMenu = this.preventContextMenu.bind(this);
-    this.invoke = this.invoke.bind(this);
-    this.hide = this.hide.bind(this);
 
     // @ts-ignore
     target.addEventListener('pointerdown', this.pointerDown);
-    window.addEventListener('pointerup', this.hide);
     // @ts-ignore
     target.addEventListener('contextmenu', this.preventContextMenu);
 
@@ -100,8 +99,14 @@ class UtilityWheel {
 
   pointerDown(e: PointerEvent) {
     if (e.button === this.invokeButton) {
+      window.addEventListener('pointerup', this.pointerUp);
       this.invoke(e.clientX, e.clientY);
     }
+  }
+  pointerUp(e: PointerEvent) {
+    window.removeEventListener('pointerup', this.pointerUp);
+    this.hide();
+    this.invokeEvent('pointerUp', e);
   }
 
   sectionUp(side: SectionSide) {
