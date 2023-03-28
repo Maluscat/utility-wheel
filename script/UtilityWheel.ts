@@ -22,10 +22,11 @@ class UtilityWheel {
   };
 
   invokeButton;
-
+  target;
   element;
 
   constructor(element: HTMLElement, { target = window, invokeButton = 2 }: Partial<ConfigOptions> = {}) {
+    this.target = target;
     this.element = element;
     this.invokeButton = invokeButton;
 
@@ -47,20 +48,26 @@ class UtilityWheel {
     this.preventContextMenu = this.preventContextMenu.bind(this);
     this.keyDown = this.keyDown.bind(this);
 
-    // @ts-ignore
-    target.addEventListener('pointerdown', this.pointerDown);
-    // @ts-ignore
-    target.addEventListener('contextmenu', this.preventContextMenu);
-
     for (const [ side, section ] of Object.entries(this.#sectionsTarget)) {
       section.addEventListener('pointerup', this.sectionUp.bind(this, <SectionSide> side));
     }
+
+    this.enable();
   }
 
   // ---- Methods ----
   setSection(side: SectionSide, node: HTMLElement, callback: Function) {
     this.#sectionsContent[side].replaceChildren(node);
     this.callbacks[side] = callback;
+  }
+
+  enable() {
+    this.target.addEventListener('pointerdown', <any> this.pointerDown);
+    this.target.addEventListener('contextmenu', <any> this.preventContextMenu);
+  }
+  disable() {
+    this.target.removeEventListener('pointerdown', <any> this.pointerDown);
+    this.target.removeEventListener('contextmenu', <any> this.preventContextMenu);
   }
 
   // ---- Visibility handling ----

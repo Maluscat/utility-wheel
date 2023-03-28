@@ -11,8 +11,10 @@ class UtilityWheel {
         pointerUp: {},
     };
     invokeButton;
+    target;
     element;
     constructor(element, { target = window, invokeButton = 2 } = {}) {
+        this.target = target;
         this.element = element;
         this.invokeButton = invokeButton;
         this.#sectionsTarget = {
@@ -31,18 +33,23 @@ class UtilityWheel {
         this.pointerUp = this.pointerUp.bind(this);
         this.preventContextMenu = this.preventContextMenu.bind(this);
         this.keyDown = this.keyDown.bind(this);
-        // @ts-ignore
-        target.addEventListener('pointerdown', this.pointerDown);
-        // @ts-ignore
-        target.addEventListener('contextmenu', this.preventContextMenu);
         for (const [side, section] of Object.entries(this.#sectionsTarget)) {
             section.addEventListener('pointerup', this.sectionUp.bind(this, side));
         }
+        this.enable();
     }
     // ---- Methods ----
     setSection(side, node, callback) {
         this.#sectionsContent[side].replaceChildren(node);
         this.callbacks[side] = callback;
+    }
+    enable() {
+        this.target.addEventListener('pointerdown', this.pointerDown);
+        this.target.addEventListener('contextmenu', this.preventContextMenu);
+    }
+    disable() {
+        this.target.removeEventListener('pointerdown', this.pointerDown);
+        this.target.removeEventListener('contextmenu', this.preventContextMenu);
     }
     // ---- Visibility handling ----
     invoke(x, y) {
