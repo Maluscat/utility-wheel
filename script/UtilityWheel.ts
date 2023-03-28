@@ -48,6 +48,9 @@ class UtilityWheel {
     this.preventContextMenu = this.preventContextMenu.bind(this);
     this.keyDown = this.keyDown.bind(this);
 
+    this.element.querySelector('.uw-circle-indicator')!
+      .addEventListener('contextmenu', <any> this.preventContextMenu);
+
     for (const [ side, section ] of Object.entries(this.#sectionsTarget)) {
       section.addEventListener('pointerup', this.sectionUp.bind(this, <SectionSide> side));
     }
