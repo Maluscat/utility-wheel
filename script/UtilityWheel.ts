@@ -1,12 +1,22 @@
 'use strict';
 interface ConfigOptions {
+  /**
+   * The target the `pointerdown` event will be registered onto.
+   * @see {@link UtilityWheel.enable} and {@link UtilityWheel.disable}
+   * for ways to control the event invokation.
+   */
   target: EventTarget;
+  /**
+   * The mouse button that invokes the utility wheel on click.
+   * @see {@link UtilityWheel.invoke}
+   */
   invokeButton: number;
 };
 
 type Section<T> = Record<SectionSide, T>;
 
 type SectionSide = 'top' | 'right' | 'bottom' | 'left';
+/** Available event types to register in {@link UtilityWheel.addEvent} */
 type EventType = 'invoke' | 'hide' | 'pointerUp';
 
 class UtilityWheel {
@@ -25,6 +35,10 @@ class UtilityWheel {
   target;
   element;
 
+  /**
+   * @param element The DOM element of the base utility wheel structure.
+   *                See the provided HTML template in html/
+   */
   constructor(element: HTMLElement, { target = window, invokeButton = 2 }: Partial<ConfigOptions> = {}) {
     this.target = target;
     this.element = element;
@@ -59,42 +73,79 @@ class UtilityWheel {
   }
 
   // ---- Methods ----
+  /**
+   * Sets a section's DOM content and callback.
+   * @param side Which side to set.
+   * @param node The DOM content that will be added into the specific `.uw-section-content`.
+   * @param callback The function that's called when a section is invoked.
+   */
   setSection(side: SectionSide, node: HTMLElement, callback: Function) {
     this.#sectionsContent[side].replaceChildren(node);
     this.callbacks[side] = callback;
   }
 
+  /**
+   * Enables the DOM events for mouse invokation.
+   * Is called automatically in the constructor.
+   * @see the counterpart {@link disable}
+   */
   enable() {
     this.target.addEventListener('pointerdown', <any> this.pointerDown);
     this.target.addEventListener('contextmenu', <any> this.preventContextMenu);
   }
+  /**
+   * Disables the DOM events for mouse invokation.
+   * @see the counterpart {@link enable}
+   */
   disable() {
     this.target.removeEventListener('pointerdown', <any> this.pointerDown);
     this.target.removeEventListener('contextmenu', <any> this.preventContextMenu);
   }
 
   // ---- Visibility handling ----
+  /**
+   * Manually invokes the utility wheel's visibility at the given coordinates.
+   * Invokes the 'invoke' event.
+   */
   invoke(x: number, y: number) {
     this.element.classList.remove('uw-hidden');
     this.element.style.transform = `translate(${x}px, ${y}px)`;
     this.invokeEvent('invoke');
   }
+  /**
+   * Manually hides the utility wheel from the DOM.
+   * Invokes the 'hide' event.
+   */
   hide() {
     this.element.classList.add('uw-hidden');
     this.invokeEvent('hide');
   }
 
   // ---- Event handling ----
+  /**
+   * Adds a custom event listener from the {@link EventType} selection.
+   * Returns a unique identifier that can be used to remove the event
+   * in {@link removeEvent}.
+   * @return An event identifier that can be used to remove it.
+   */
   addEvent(type: EventType, callback: Function) {
     this.#events[type][this.#eventCounter++] = callback;
     return this.#eventCounter - 1;
   }
+  /**
+   * Removes a custom event by its unique identifier.
+   * @see {@link addEvent}.
+   */
   removeEvent(index: number) {
     for (const events of Object.values(this.#events)) {
       delete events[index];
     }
   }
 
+  /**
+   * Manually invokes all events of a given type with custom arguments.
+   * @see {@link EventType}.
+   */
   invokeEvent(type: EventType, ...args: any[]) {
     for (const callback of Object.values(this.#events[type])) {
       callback(...args);
