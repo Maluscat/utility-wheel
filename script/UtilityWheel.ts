@@ -143,7 +143,8 @@ class UtilityWheel {
   }
 
   /**
-   * Manually invokes all events of a given type with custom arguments.
+   * Invokes all registered events of a given type with custom arguments.
+   * Probably not useful on its own, just a helper function.
    * @see {@link EventType}.
    */
   invokeEvent(type: EventType, ...args: any[]) {
