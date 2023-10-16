@@ -13,6 +13,12 @@ interface ConfigOptions {
   invokeButton: number;
 };
 
+/**
+ * The function that's called when a section is invoked.
+ * Is given the `PointerEvent` of the invoking pointer as argument.
+ */
+type SectionCallback = (e: PointerEvent) => void;
+
 type Section<T> = Record<SectionSide, T>;
 
 type SectionSide = 'top' | 'right' | 'bottom' | 'left';
@@ -77,9 +83,9 @@ class UtilityWheel {
    * Sets a section's DOM content and callback.
    * @param side Which side to set.
    * @param node The DOM content that will be added into the specific `.uw-section-content`.
-   * @param callback The function that's called when a section is invoked.
+   * @param callback Is called when a section is invoked.
    */
-  setSection(side: SectionSide, node: HTMLElement, callback: Function) {
+  setSection(side: SectionSide, node: HTMLElement, callback: SectionCallback) {
     this.#sectionsContent[side].replaceChildren(node);
     this.callbacks[side] = callback;
   }
