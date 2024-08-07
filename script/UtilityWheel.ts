@@ -1,5 +1,5 @@
 'use strict';
-interface Config {
+export interface Config {
   /**
    * The target the `pointerdown` event will be registered onto.
    * @see {@link UtilityWheel.enable} and {@link UtilityWheel.disable}
@@ -22,13 +22,13 @@ type SectionCallback = (e: PointerEvent) => void;
 type Section<T> = Record<SectionSide, T>;
 
 /** Identifier for all of the four sections. */
-type SectionSide = 'top' | 'right' | 'bottom' | 'left';
+export type SectionSide = 'top' | 'right' | 'bottom' | 'left';
 
 /**
  * Available event types along with their callback outline.
  * @see {@link UtilityWheel.addEvent}
  */
-interface EventData {
+export interface EventData {
   invoke: () => void;
   hide: () => void;
   pointerUp: (e: PointerEvent) => void;
@@ -36,7 +36,7 @@ interface EventData {
 
 
 /** Simple drop-in, configurable utility wheel for front-end use. */
-class UtilityWheel {
+export class UtilityWheel {
   /**
    * List of the DOM elements that serve as the mouse targets
    * of the utility wheel's four sections.

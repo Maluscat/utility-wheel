@@ -1,7 +1,7 @@
 'use strict';
 ;
 /** Simple drop-in, configurable utility wheel for front-end use. */
-class UtilityWheel {
+export class UtilityWheel {
     /**
      * List of the DOM elements that serve as the mouse targets
      * of the utility wheel's four sections.
