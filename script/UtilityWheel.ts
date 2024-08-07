@@ -1,14 +1,24 @@
 'use strict';
 export interface Config {
   /**
+   * Choose whether the utility wheel should initially be enabled
+   * (which is the default). This is useful when initializing
+   * a static utility wheel without function.
+   * @default true
+   */
+  enable: boolean;
+  /**
    * The target the `pointerdown` event will be registered onto.
    * @see {@link UtilityWheel.enable} and {@link UtilityWheel.disable}
-   * for ways to control the event invokation.
+   *      for ways to control the event invokation.
+   * @default window
    */
   target: EventTarget;
   /**
-   * The mouse button that invokes the utility wheel on click.
+   * The mouse button that invokes the utility wheel on click
+   * (default: right mouse button).
    * @see {@link UtilityWheel.invoke}
+   * @default 2
    */
   invokeButton: number;
 };
@@ -17,9 +27,9 @@ export interface Config {
  * The function that's called when a section is invoked.
  * Is given the `PointerEvent` of the invoking pointer as argument.
  */
-type SectionCallback = (e: PointerEvent) => void;
+export type SectionCallback = (e: PointerEvent) => void;
 
-type Section<T> = Record<SectionSide, T>;
+export type Section<T> = Record<SectionSide, T>;
 
 /** Identifier for all of the four sections. */
 export type SectionSide = 'top' | 'right' | 'bottom' | 'left';
@@ -67,7 +77,13 @@ export class UtilityWheel {
    * @param element The DOM element of the base utility wheel structure.
    *                See the provided HTML template in the `html/` folder.
    */
-  constructor(element: HTMLElement, { target = window, invokeButton = 2 }: Partial<Config> = {}) {
+  constructor(
+    element: HTMLElement, {
+      target = window,
+      invokeButton = 2,
+      enable = true
+    }: Partial<Config> = {}
+  ) {
     this.target = target;
     this.element = element;
     this.invokeButton = invokeButton;
@@ -94,10 +110,10 @@ export class UtilityWheel {
       .addEventListener('contextmenu', <any> this._preventContextMenu);
 
     for (const [ side, section ] of Object.entries(this.sectionsTarget)) {
-      section.addEventListener('pointerup', this._sectionUp.bind(this, <SectionSide> side));
+      section.addEventListener('pointerup', this._sectionUp.bind(this, side as SectionSide));
     }
 
-    this.enable();
+    if (enable) this.enable();
   }
 
   // ---- Methods ----
@@ -179,7 +195,7 @@ export class UtilityWheel {
    * Takes one of three possible arguments:
    * - An event identifier returned by {@link addEvent}.
    * - An event name (removes everything under the event name, e.g. 'pointerUp').
-   * - A callback (removes every event with the callback assigned).
+   * - A callback (removes every event that has the callback attached).
    *
    * @param key Either an event ID, an event name or a callback.
    */

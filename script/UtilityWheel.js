@@ -29,7 +29,7 @@ export class UtilityWheel {
      * @param element The DOM element of the base utility wheel structure.
      *                See the provided HTML template in the `html/` folder.
      */
-    constructor(element, { target = window, invokeButton = 2 } = {}) {
+    constructor(element, { target = window, invokeButton = 2, enable = true } = {}) {
         this.target = target;
         this.element = element;
         this.invokeButton = invokeButton;
@@ -54,7 +54,8 @@ export class UtilityWheel {
         for (const [side, section] of Object.entries(this.sectionsTarget)) {
             section.addEventListener('pointerup', this._sectionUp.bind(this, side));
         }
-        this.enable();
+        if (enable)
+            this.enable();
     }
     // ---- Methods ----
     /**
@@ -132,7 +133,7 @@ export class UtilityWheel {
      * Takes one of three possible arguments:
      * - An event identifier returned by {@link addEvent}.
      * - An event name (removes everything under the event name, e.g. 'pointerUp').
-     * - A callback (removes every event with the callback assigned).
+     * - A callback (removes every event that has the callback attached).
      *
      * @param key Either an event ID, an event name or a callback.
      */
