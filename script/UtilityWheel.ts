@@ -22,16 +22,21 @@ type SectionCallback = (e: PointerEvent) => void;
 type Section<T> = Record<SectionSide, T>;
 
 type SectionSide = 'top' | 'right' | 'bottom' | 'left';
+
 /** Available event types to register in {@link UtilityWheel.addEvent} */
-type EventType = 'invoke' | 'hide' | 'pointerUp';
+interface EventData {
+  invoke: () => void;
+  hide: () => void;
+  pointerUp: (e: PointerEvent) => void;
+}
 
 class UtilityWheel {
-  #sectionsTarget: Section<HTMLElement>;
-  #sectionsContent: Section<HTMLElement>;
+  sectionsTarget: Section<HTMLElement>;
+  sectionsContent: Section<HTMLElement>;
   callbacks: Partial<Section<Function>> = {};
 
   #eventCounter = 0;
-  #events: Record<EventType, Record<number, Function>> = {
+  #events: Record<keyof EventData, Record<number, Function>> = {
     invoke: {},
     hide: {},
     pointerUp: {},
@@ -50,13 +55,13 @@ class UtilityWheel {
     this.element = element;
     this.invokeButton = invokeButton;
 
-    this.#sectionsTarget = {
+    this.sectionsTarget = {
       top: element.querySelector('.uw-section-target.uw-top')!,
       right: element.querySelector('.uw-section-target.uw-right')!,
       bottom: element.querySelector('.uw-section-target.uw-bottom')!,
       left: element.querySelector('.uw-section-target.uw-left')!,
     };
-    this.#sectionsContent = {
+    this.sectionsContent = {
       top: element.querySelector('.uw-section-content.uw-top')!,
       right: element.querySelector('.uw-section-content.uw-right')!,
       bottom: element.querySelector('.uw-section-content.uw-bottom')!,
@@ -71,7 +76,7 @@ class UtilityWheel {
     this.element.querySelector('.uw-circle-indicator')!
       .addEventListener('contextmenu', <any> this.preventContextMenu);
 
-    for (const [ side, section ] of Object.entries(this.#sectionsTarget)) {
+    for (const [ side, section ] of Object.entries(this.sectionsTarget)) {
       section.addEventListener('pointerup', this.sectionUp.bind(this, <SectionSide> side));
     }
 
@@ -82,11 +87,17 @@ class UtilityWheel {
   /**
    * Sets a section's DOM content and callback.
    * @param side Which side to set.
-   * @param node The DOM content that will be added into the specific `.uw-section-content`.
+   * @param element The DOM content that will be added into the specific `.uw-section-content`.
    * @param callback Is called when a section is invoked.
    */
-  setSection(side: SectionSide, node: HTMLElement, callback: SectionCallback) {
-    this.#sectionsContent[side].replaceChildren(node);
+  setSection(side: SectionSide, element: HTMLElement, callback: SectionCallback) {
+    this.setSectionContent(side, element);
+    this.setSectionCallback(side, callback);
+  }
+  setSectionContent(side: SectionSide, element: HTMLElement) {
+    this.sectionsContent[side].replaceChildren(element);
+  }
+  setSectionCallback(side: SectionSide, callback: Function) {
     this.callbacks[side] = callback;
   }
 
@@ -134,7 +145,7 @@ class UtilityWheel {
    * in {@link removeEvent}.
    * @return An event identifier that can be used to remove it.
    */
-  addEvent(type: EventType, callback: Function) {
+  addEvent<T extends keyof EventData>(type: T, callback: EventData[T]) {
     this.#events[type][this.#eventCounter++] = callback;
     return this.#eventCounter - 1;
   }
@@ -142,9 +153,21 @@ class UtilityWheel {
    * Removes a custom event by its unique identifier.
    * @see {@link addEvent}.
    */
-  removeEvent(index: number) {
-    for (const events of Object.values(this.#events)) {
-      delete events[index];
+  removeEvent<T extends keyof EventData>(key: number | T | EventData[keyof EventData]) {
+    if (typeof key === 'string') {
+      this.#events[key] = {};
+    } else {
+      for (const events of Object.values(this.#events)) {
+        if (typeof key === 'number') {
+          delete events[key];
+        } else {
+          for (const [ index, fun ] of Object.entries(events)) {
+            if (fun === key) {
+              delete events[index as any];
+            }
+          }
+        }
+      }
     }
   }
 
@@ -153,7 +176,7 @@ class UtilityWheel {
    * Probably not useful on its own, just a helper function.
    * @see {@link EventType}.
    */
-  invokeEvent(type: EventType, ...args: any[]) {
+  invokeEvent<T extends keyof EventData>(type: T, ...args: Parameters<EventData[T]>) {
     for (const callback of Object.values(this.#events[type])) {
       callback(...args);
     }
