@@ -21,7 +21,7 @@ export interface Config {
    * @default 2
    */
   invokeButton: number;
-};
+}
 
 /**
  * The function that's called when a section is invoked.

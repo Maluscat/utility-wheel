@@ -28,11 +28,15 @@ export class UtilityWheelUIConfig extends UtilityWheel {
     }
     // ---- Drag handling ----
     #dragStart(actionIndex, e) {
+        e.dataTransfer.dropEffect = 'move';
+        e.dataTransfer.effectAllowed = 'copyMove';
         e.dataTransfer.setData('text/plain', actionIndex.toString());
         e.currentTarget.classList.add('uw-dragging');
+        document.body.classList.add('uw-is-dragging');
     }
     #dragEnd(element) {
         element.classList.remove('uw-dragging');
+        document.body.classList.remove('uw-is-dragging');
     }
     #dropElement(contentSection, side, e) {
         e.preventDefault();

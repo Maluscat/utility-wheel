@@ -1,5 +1,4 @@
 'use strict';
-;
 /** Simple drop-in, configurable utility wheel for front-end use. */
 export class UtilityWheel {
     /**

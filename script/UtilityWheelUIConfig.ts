@@ -56,11 +56,15 @@ export class UtilityWheelUIConfig extends UtilityWheel {
 
   // ---- Drag handling ----
   #dragStart(actionIndex: number, e: DragEvent) {
+    e.dataTransfer!.dropEffect = 'move';
+    e.dataTransfer!.effectAllowed = 'copyMove';
     e.dataTransfer!.setData('text/plain', actionIndex.toString());
     (e.currentTarget as HTMLElement).classList.add('uw-dragging');
+    document.body.classList.add('uw-is-dragging');
   }
   #dragEnd(element: HTMLElement) {
     element.classList.remove('uw-dragging');
+    document.body.classList.remove('uw-is-dragging');
   }
   #dropElement(contentSection: HTMLElement, side: SectionSide, e: DragEvent) {
     e.preventDefault();
