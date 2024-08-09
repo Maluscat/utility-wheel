@@ -51,7 +51,7 @@ export class UtilityWheelUIConfig extends UtilityWheel {
     }
     #dragLeave(contentSection, e) {
         e.target.classList.remove('uw-dragover');
-        contentSection.classList.add('uw-dragover');
+        contentSection.classList.remove('uw-dragover');
     }
     // ---- Overrides ----
     setSection(side, element, callback) {
