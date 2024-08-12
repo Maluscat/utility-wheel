@@ -15,8 +15,8 @@ export class UtilityWheelUIConfig extends UtilityWheel {
         config.configContainer.appendChild(this.configWheel.element);
         this.actionList.forEach(({ element }, i) => {
             element.draggable = true;
-            element.addEventListener('dragstart', this.#dragStart.bind(this, i));
-            element.addEventListener('dragend', this.#dragEnd.bind(this, element));
+            element.addEventListener('dragstart', this.#dragStart.bind(this, i, element));
+            element.addEventListener('dragend', this.#dragEnd.bind(this, i, element));
         });
         for (const [side, element] of Object.entries(this.configWheel.sectionsTarget)) {
             const contentSection = this.configWheel.sectionsContent[side];
@@ -27,39 +27,78 @@ export class UtilityWheelUIConfig extends UtilityWheel {
         }
     }
     // ---- Drag handling ----
-    #dragStart(actionIndex, e) {
+    #dragStart(actionIndex, element, e) {
         e.dataTransfer.dropEffect = 'move';
         e.dataTransfer.effectAllowed = 'copyMove';
         e.dataTransfer.setData('text/plain', actionIndex.toString());
         e.currentTarget.classList.add('uw-dragging');
         document.body.classList.add('uw-is-dragging');
+        this.invokeEvent('dragStart', {
+            evt: e,
+            actionIndex,
+            actionElem: element
+        });
     }
-    #dragEnd(element) {
+    #dragEnd(actionIndex, element, e) {
         element.classList.remove('uw-dragging');
         document.body.classList.remove('uw-is-dragging');
     }
-    #dropElement(contentSection, side, e) {
+    #dropElement(contentElem, side, e) {
         e.preventDefault();
-        const index = Number(e.dataTransfer.getData('text/plain'));
-        const { element, callback } = this.actionList[index];
-        this.#dragEnd(element);
-        this.#dragLeave(contentSection, e);
+        const actionIndex = Number(e.dataTransfer.getData('text/plain'));
+        const { element, callback } = this.actionList[actionIndex];
+        this.#dragEnd(actionIndex, element, e);
+        this.#dragLeave(contentElem, e);
         this.setSection(side, element.cloneNode(true), callback);
+        this.invokeEvent('drop', {
+            evt: e,
+            actionIndex,
+            actionElem: element,
+            contentElem,
+            targetElem: e.currentTarget
+        });
     }
-    #dragOver(contentSection, e) {
+    #dragOver(contentElem, e) {
         e.preventDefault();
+        this.invokeEvent('dragOver', {
+            evt: e,
+            contentElem,
+            targetElem: e.currentTarget
+        });
     }
-    #dragEnter(contentSection, e) {
+    #dragEnter(contentElem, e) {
         e.target.classList.add('uw-dragover');
-        contentSection.classList.add('uw-dragover');
+        contentElem.classList.add('uw-dragover');
+        this.invokeEvent('dragEnter', {
+            evt: e,
+            contentElem,
+            targetElem: e.currentTarget
+        });
     }
-    #dragLeave(contentSection, e) {
+    #dragLeave(contentElem, e) {
         e.target.classList.remove('uw-dragover');
-        contentSection.classList.remove('uw-dragover');
+        contentElem.classList.remove('uw-dragover');
+        this.invokeEvent('dragLeave', {
+            evt: e,
+            contentElem,
+            targetElem: e.currentTarget
+        });
     }
     // ---- Overrides ----
     setSection(side, element, callback) {
         super.setSection(side, element, callback);
         this.configWheel.setSectionContent(side, element.cloneNode(true));
+    }
+    addEvent(type, callback) {
+        // @ts-ignore
+        return super.addEvent(...arguments);
+    }
+    removeEvent(key) {
+        // @ts-ignore
+        return super.removeEvent(...arguments);
+    }
+    invokeEvent(type, ...args) {
+        // @ts-ignore
+        return super.invokeEvent(...arguments);
     }
 }

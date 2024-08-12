@@ -1,10 +1,33 @@
 'use strict';
 import {
   UtilityWheel,
+  type EventData,
   type SectionSide,
   type SectionCallback,
   type Config as ParentConfig,
 } from './UtilityWheel.js';
+
+type GetSubsetFunction<Set extends Record<string, any>, T extends Record<string, keyof Set>> = {
+  [ Key in keyof T ]: (args: Pick<Set, T[Key]>) => void
+};
+
+interface EventArgs {
+  evt: DragEvent;
+  actionIndex: number;
+  actionElem: HTMLElement;
+  contentElem: HTMLElement;
+  targetElem: HTMLElement;
+  side: SectionSide;
+}
+
+type UIEventData = EventData & GetSubsetFunction<EventArgs, {
+  dragStart: 'evt' | 'actionElem' | 'actionIndex';
+  dragEnd: 'evt' | 'actionElem' | 'actionIndex';
+  dragOver: 'evt' | 'contentElem' | 'targetElem';
+  dragEnter: 'evt' | 'contentElem' | 'targetElem';
+  dragLeave: 'evt' | 'contentElem' | 'targetElem';
+  drop: 'evt' | 'contentElem' | 'targetElem' | 'actionElem' | 'actionIndex';
+}>
 
 interface ActionData {
   element: HTMLElement;
@@ -41,8 +64,8 @@ export class UtilityWheelUIConfig extends UtilityWheel {
 
     this.actionList.forEach(({ element }, i) => {
       element.draggable = true;
-      element.addEventListener('dragstart', <any> this.#dragStart.bind(this, i));
-      element.addEventListener('dragend', <any> this.#dragEnd.bind(this, element));
+      element.addEventListener('dragstart', <any> this.#dragStart.bind(this, i, element));
+      element.addEventListener('dragend', <any> this.#dragEnd.bind(this, i, element));
     });
 
     for (const [ side, element ] of Object.entries(this.configWheel.sectionsTarget)) {
@@ -55,42 +78,86 @@ export class UtilityWheelUIConfig extends UtilityWheel {
   }
 
   // ---- Drag handling ----
-  #dragStart(actionIndex: number, e: DragEvent) {
+  #dragStart(actionIndex: number, element: HTMLElement, e: DragEvent) {
     e.dataTransfer!.dropEffect = 'move';
     e.dataTransfer!.effectAllowed = 'copyMove';
     e.dataTransfer!.setData('text/plain', actionIndex.toString());
     (e.currentTarget as HTMLElement).classList.add('uw-dragging');
     document.body.classList.add('uw-is-dragging');
+
+    this.invokeEvent('dragStart', {
+      evt: e,
+      actionIndex,
+      actionElem: element
+    });
   }
-  #dragEnd(element: HTMLElement) {
+  #dragEnd(actionIndex: number, element: HTMLElement, e: DragEvent) {
     element.classList.remove('uw-dragging');
     document.body.classList.remove('uw-is-dragging');
   }
-  #dropElement(contentSection: HTMLElement, side: SectionSide, e: DragEvent) {
+  #dropElement(contentElem: HTMLElement, side: SectionSide, e: DragEvent) {
     e.preventDefault();
-    const index = Number(e.dataTransfer!.getData('text/plain'));
-    const { element, callback } = this.actionList[index];
+    const actionIndex = Number(e.dataTransfer!.getData('text/plain'));
+    const { element, callback } = this.actionList[actionIndex];
 
-    this.#dragEnd(element);
-    this.#dragLeave(contentSection, e);
-
+    this.#dragEnd(actionIndex, element, e);
+    this.#dragLeave(contentElem, e);
     this.setSection(side, element.cloneNode(true) as HTMLElement, callback);
+
+    this.invokeEvent('drop', {
+      evt: e,
+      actionIndex,
+      actionElem: element,
+      contentElem,
+      targetElem: e.currentTarget as HTMLElement
+    });
   }
-  #dragOver(contentSection: HTMLElement, e: DragEvent) {
+  #dragOver(contentElem: HTMLElement, e: DragEvent) {
     e.preventDefault();
+
+    this.invokeEvent('dragOver', {
+      evt: e,
+      contentElem,
+      targetElem: e.currentTarget as HTMLElement
+    });
   }
-  #dragEnter(contentSection: HTMLElement, e: DragEvent) {
+  #dragEnter(contentElem: HTMLElement, e: DragEvent) {
     (e.target as HTMLElement).classList.add('uw-dragover');
-    contentSection.classList.add('uw-dragover');
+    contentElem.classList.add('uw-dragover');
+
+    this.invokeEvent('dragEnter', {
+      evt: e,
+      contentElem,
+      targetElem: e.currentTarget as HTMLElement
+    });
   }
-  #dragLeave(contentSection: HTMLElement, e: DragEvent) {
+  #dragLeave(contentElem: HTMLElement, e: DragEvent) {
     (e.target as HTMLElement).classList.remove('uw-dragover');
-    contentSection.classList.remove('uw-dragover');
+    contentElem.classList.remove('uw-dragover');
+
+    this.invokeEvent('dragLeave', {
+      evt: e,
+      contentElem,
+      targetElem: e.currentTarget as HTMLElement
+    });
   }
 
   // ---- Overrides ----
   setSection(side: SectionSide, element: HTMLElement, callback: SectionCallback) {
     super.setSection(side, element, callback);
     this.configWheel.setSectionContent(side, element.cloneNode(true) as HTMLElement);
+  }
+
+  addEvent<T extends keyof UIEventData>(type: T, callback: UIEventData[T]) {
+    // @ts-ignore
+    return super.addEvent(...arguments);
+  }
+  removeEvent<T extends keyof UIEventData>(key: number | T | UIEventData[keyof EventData]) {
+    // @ts-ignore
+    return super.removeEvent(...arguments);
+  }
+  invokeEvent<T extends keyof UIEventData>(type: T, ...args: Parameters<UIEventData[T]>) {
+    // @ts-ignore
+    return super.invokeEvent(...arguments);
   }
 }
