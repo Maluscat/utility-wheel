@@ -60,6 +60,7 @@ export class UtilityWheelUIConfig extends UtilityWheel {
     this.configWheel = new UtilityWheel(element.cloneNode(true) as HTMLElement, {
       enable: false
     });
+    this.configWheel.element.classList.add('uw-configuration-wheel');
     config.configContainer.appendChild(this.configWheel.element);
 
     this.actionList.forEach(({ element }, i) => {
