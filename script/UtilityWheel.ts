@@ -60,11 +60,7 @@ export class UtilityWheel {
   callbacks: Partial<Section<Function>> = {};
 
   #eventCounter = 0;
-  #events: Record<keyof EventData, Record<number, Function>> = {
-    invoke: {},
-    hide: {},
-    pointerUp: {},
-  };
+  #events: Record<string, Record<number, Function>> = {};
 
   /** @see {@link Config.invokeButton} */
   invokeButton;
@@ -186,6 +182,9 @@ export class UtilityWheel {
    * @see {@link EventData}
    */
   addEvent<T extends keyof EventData>(type: T, callback: EventData[T]) {
+    if (!this.#events[type]) {
+      this.#events[type] = {};
+    }
     this.#events[type][this.#eventCounter++] = callback;
     return this.#eventCounter - 1;
   }
@@ -222,8 +221,10 @@ export class UtilityWheel {
    * @see {@link EventData}
    */
   invokeEvent<T extends keyof EventData>(type: T, ...args: Parameters<EventData[T]>) {
-    for (const callback of Object.values(this.#events[type])) {
-      callback(...args);
+    if (this.#events[type]) {
+      for (const callback of Object.values(this.#events[type])) {
+        callback(...args);
+      }
     }
   }
 

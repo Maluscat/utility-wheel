@@ -13,11 +13,7 @@ export class UtilityWheel {
     sectionsContent;
     callbacks = {};
     #eventCounter = 0;
-    #events = {
-        invoke: {},
-        hide: {},
-        pointerUp: {},
-    };
+    #events = {};
     /** @see {@link Config.invokeButton} */
     invokeButton;
     /** @see {@link Config.target} */
@@ -123,6 +119,9 @@ export class UtilityWheel {
      * @see {@link EventData}
      */
     addEvent(type, callback) {
+        if (!this.#events[type]) {
+            this.#events[type] = {};
+        }
         this.#events[type][this.#eventCounter++] = callback;
         return this.#eventCounter - 1;
     }
@@ -160,8 +159,10 @@ export class UtilityWheel {
      * @see {@link EventData}
      */
     invokeEvent(type, ...args) {
-        for (const callback of Object.values(this.#events[type])) {
-            callback(...args);
+        if (this.#events[type]) {
+            for (const callback of Object.values(this.#events[type])) {
+                callback(...args);
+            }
         }
     }
     // ---- Events ----
