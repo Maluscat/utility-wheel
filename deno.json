@@ -1,6 +1,0 @@
-{
-  "tasks": {
-    "build": "tsc",
-    "dev": "tsc --watch"
-  }
-}
