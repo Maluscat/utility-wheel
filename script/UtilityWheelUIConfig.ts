@@ -7,27 +7,15 @@ import {
   type Config as ParentConfig,
 } from './UtilityWheel.js';
 
-type GetSubsetFunction<Set extends Record<string, any>, T extends Record<string, keyof Set>> = {
-  [ Key in keyof T ]: (args: Pick<Set, T[Key]>) => void
-};
-
-interface EventArgs {
-  evt: DragEvent;
-  actionIndex: number;
-  actionElem: HTMLElement;
-  contentElem: HTMLElement;
-  targetElem: HTMLElement;
-  side: SectionSide;
+export interface UIEvents extends Events {
+  dragStart: (e: {evt: DragEvent, actionElem: HTMLElement, actionIndex: number}) => void;
+  dragEnd: (e: {evt: DragEvent, actionElem: HTMLElement, actionIndex: number}) => void;
+  dragOver: (args: {evt: DragEvent, contentElem: HTMLElement, targetElem: HTMLElement}) => void;
+  dragEnter: (args: {evt: DragEvent, contentElem: HTMLElement, targetElem: HTMLElement}) => void;
+  dragLeave: (args: {evt: DragEvent, contentElem: HTMLElement, targetElem: HTMLElement}) => void;
+  drop: (args: {evt: DragEvent, contentElem: HTMLElement, targetElem: HTMLElement,
+         actionElem: HTMLElement, actionIndex: number}) => void;
 }
-
-export type UIEvents = Events & GetSubsetFunction<EventArgs, {
-  dragStart: 'evt' | 'actionElem' | 'actionIndex';
-  dragEnd: 'evt' | 'actionElem' | 'actionIndex';
-  dragOver: 'evt' | 'contentElem' | 'targetElem';
-  dragEnter: 'evt' | 'contentElem' | 'targetElem';
-  dragLeave: 'evt' | 'contentElem' | 'targetElem';
-  drop: 'evt' | 'contentElem' | 'targetElem' | 'actionElem' | 'actionIndex';
-}>
 
 /**
  * An action is the combination of DOM element and callback
