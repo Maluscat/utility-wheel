@@ -2,13 +2,14 @@
 export interface Config {
   /**
    * Choose whether the utility wheel should initially be enabled
-   * (which is the default). This is useful when initializing
+   * (the default). This is useful when initializing
    * a static utility wheel without function.
    * @default true
    */
   enable: boolean;
   /**
-   * The target the `pointerdown` event will be registered onto.
+   * The target the `pointerdown` event, that will invoke
+   * the utility wheel, will be registered onto.
    * @see {@link UtilityWheel.enable} and {@link UtilityWheel.disable}
    *      for ways to control the event invokation.
    * @default window
@@ -23,10 +24,7 @@ export interface Config {
   invokeButton: number;
 }
 
-/**
- * The function that's called when a section is invoked.
- * Is given the `PointerEvent` of the invoking pointer as argument.
- */
+/** The function that's called when a section is invoked. */
 export type SectionCallback = (e: PointerEvent) => void;
 
 export type Section<T> = Record<SectionSide, T>;
@@ -38,7 +36,7 @@ export type SectionSide = 'top' | 'right' | 'bottom' | 'left';
  * Available event types along with their callback outline.
  * @see {@link UtilityWheel.addEvent}
  */
-export interface EventData {
+export interface Events {
   invoke: () => void;
   hide: () => void;
   pointerUp: (e: PointerEvent) => void;
@@ -57,7 +55,7 @@ export class UtilityWheel {
    * of the utility wheel's four sections.
    */
   sectionsContent: Section<HTMLElement>;
-  callbacks: Partial<Section<Function>> = {};
+  #callbacks: Partial<Section<Function>> = {};
 
   #eventCounter = 0;
   #events: Record<string, Record<number, Function>> = {};
@@ -137,7 +135,7 @@ export class UtilityWheel {
    * @param callback The callback that is called when the section is invoked.
    */
   setSectionCallback(side: SectionSide, callback: Function) {
-    this.callbacks[side] = callback;
+    this.#callbacks[side] = callback;
   }
 
   /**
@@ -179,9 +177,9 @@ export class UtilityWheel {
    * Returns a unique identifier that can be passed to {@link removeEvent}.
    *
    * @returns An identifier that can be used to remove the event in {@link removeEvent}.
-   * @see {@link EventData}
+   * @see {@link Events}
    */
-  addEvent<T extends keyof EventData>(type: T, callback: EventData[T]) {
+  addEvent<T extends keyof Events>(type: T, callback: Events[T]) {
     if (!this.#events[type]) {
       this.#events[type] = {};
     }
@@ -198,7 +196,7 @@ export class UtilityWheel {
    *
    * @param key Either an event ID, an event name or a callback.
    */
-  removeEvent<T extends keyof EventData>(key: number | T | EventData[keyof EventData]) {
+  removeEvent<T extends keyof Events>(key: number | T | Events[keyof Events]) {
     if (typeof key === 'string') {
       this.#events[key] = {};
     } else {
@@ -218,9 +216,9 @@ export class UtilityWheel {
 
   /**
    * Manually invoke an event from the available event types with matching arguments.
-   * @see {@link EventData}
+   * @see {@link Events}
    */
-  invokeEvent<T extends keyof EventData>(type: T, ...args: Parameters<EventData[T]>) {
+  invokeEvent<T extends keyof Events>(type: T, ...args: Parameters<Events[T]>) {
     if (this.#events[type]) {
       for (const callback of Object.values(this.#events[type])) {
         callback(...args);
@@ -262,7 +260,7 @@ export class UtilityWheel {
 
   /** @internal */
   _sectionUp(side: SectionSide, e: PointerEvent) {
-    this.callbacks[side]?.(e);
+    this.#callbacks[side]?.(e);
   }
 
   // ---- Event helpers ----

@@ -1,7 +1,27 @@
 'use strict';
 import { UtilityWheel, } from './UtilityWheel.js';
+/**
+ * UtilityWheel UI configuration helper.
+ *
+ * This library will instantiate a static utility wheel ("configuration wheel"),
+ * that will be the drop target of all passed actions, inside the given container.
+ * In the front-end, these actions can then be dragged and dropped onto
+ * the configuration wheel to automatically reassign the underlying real
+ * utility wheel with the dragged action.
+ *
+ * The DOM elements of the supplied actions will be given the relevant
+ * drag and drop events. However, they must still be appended to the DOM
+ * manually wherever fits your purposes. Everything else is handled by
+ * this class.
+ *
+ * Several custom events may be registered using the {@link UtilityWheel}
+ * event system which are invoked at different steps during the drag and
+ * drop process. See {@link UIEvents} for all available events.
+ */
 export class UtilityWheelUIConfig extends UtilityWheel {
+    /** The static utility wheel instance used for the configuration. */
     configWheel;
+    /** @see {@link Config.actionList} */
     actionList;
     constructor(element, config) {
         if (!config?.actionList || !config?.configContainer) {

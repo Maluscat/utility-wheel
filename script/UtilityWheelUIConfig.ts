@@ -1,7 +1,7 @@
 'use strict';
 import {
   UtilityWheel,
-  type EventData,
+  type Events,
   type SectionSide,
   type SectionCallback,
   type Config as ParentConfig,
@@ -20,7 +20,7 @@ interface EventArgs {
   side: SectionSide;
 }
 
-type UIEventData = EventData & GetSubsetFunction<EventArgs, {
+export type UIEvents = Events & GetSubsetFunction<EventArgs, {
   dragStart: 'evt' | 'actionElem' | 'actionIndex';
   dragEnd: 'evt' | 'actionElem' | 'actionIndex';
   dragOver: 'evt' | 'contentElem' | 'targetElem';
@@ -29,23 +29,72 @@ type UIEventData = EventData & GetSubsetFunction<EventArgs, {
   drop: 'evt' | 'contentElem' | 'targetElem' | 'actionElem' | 'actionIndex';
 }>
 
+/**
+ * An action is the combination of DOM element and callback
+ * that can be assigned to a utility wheel's section.
+ */
 interface ActionData {
+  /**
+   * The action's DOM element.
+   *
+   * Will be the target of the relevant drag and drop events and
+   * must be manually appended to the DOM without making a copy.
+   *
+   * Upon setting a utility wheel's action, this element
+   * is cloned into the relevant section's content.
+   */
   element: HTMLElement;
+  /**
+   * The callback that is set to the relevant utility wheel's
+   * section once it is updated with this action.
+   */
   callback: SectionCallback;
 }
 
 export interface Config extends Partial<ParentConfig> {
+  /**
+   * List of all available actions that can be assigned to the current
+   * utility wheel, each containing its DOM element and assigned callback.
+   *
+   * @remarks
+   * All relevant drag and drop events are added to the specified actions'
+   * elements. It is your responsibility to append them somewhere to the DOM.
+   *
+   * For this purpose, the specified elements have to be appended to the
+   * DOM as-is, since they carry event information. Do NOT clone them first.
+   */
   actionList: ActionData[];
   /**
-   * The DOM element that a clone of the passed utility wheel will
-   * be appended into.
+   * The DOM element that the configuration wheel
+   * ({@link UtilityWheelUIConfig.configWheel}, which will be used as a
+   * drop target) will be appended into.
    */
   configContainer: HTMLElement;
 }
 
 
+/**
+ * UtilityWheel UI configuration helper.
+ *
+ * This library will instantiate a static utility wheel ("configuration wheel"),
+ * that will be the drop target of all passed actions, inside the given container.
+ * In the front-end, these actions can then be dragged and dropped onto
+ * the configuration wheel to automatically reassign the underlying real
+ * utility wheel with the dragged action.
+ *
+ * The DOM elements of the supplied actions will be given the relevant
+ * drag and drop events. However, they must still be appended to the DOM
+ * manually wherever fits your purposes. Everything else is handled by
+ * this class.
+ *
+ * Several custom events may be registered using the {@link UtilityWheel}
+ * event system which are invoked at different steps during the drag and
+ * drop process. See {@link UIEvents} for all available events.
+ */
 export class UtilityWheelUIConfig extends UtilityWheel {
+  /** The static utility wheel instance used for the configuration. */
   configWheel;
+  /** @see {@link Config.actionList} */
   actionList;
 
   constructor(element: HTMLElement, config: Config) {
@@ -149,15 +198,15 @@ export class UtilityWheelUIConfig extends UtilityWheel {
     this.configWheel.setSectionContent(side, element.cloneNode(true) as HTMLElement);
   }
 
-  addEvent<T extends keyof UIEventData>(type: T, callback: UIEventData[T]) {
+  addEvent<T extends keyof UIEvents>(type: T, callback: UIEvents[T]) {
     // @ts-ignore
     return super.addEvent(...arguments);
   }
-  removeEvent<T extends keyof UIEventData>(key: number | T | UIEventData[keyof EventData]) {
+  removeEvent<T extends keyof UIEvents>(key: number | T | UIEvents[keyof Events]) {
     // @ts-ignore
     return super.removeEvent(...arguments);
   }
-  invokeEvent<T extends keyof UIEventData>(type: T, ...args: Parameters<UIEventData[T]>) {
+  invokeEvent<T extends keyof UIEvents>(type: T, ...args: Parameters<UIEvents[T]>) {
     // @ts-ignore
     return super.invokeEvent(...arguments);
   }

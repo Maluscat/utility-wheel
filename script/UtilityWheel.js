@@ -11,7 +11,7 @@ export class UtilityWheel {
      * of the utility wheel's four sections.
      */
     sectionsContent;
-    callbacks = {};
+    #callbacks = {};
     #eventCounter = 0;
     #events = {};
     /** @see {@link Config.invokeButton} */
@@ -77,7 +77,7 @@ export class UtilityWheel {
      * @param callback The callback that is called when the section is invoked.
      */
     setSectionCallback(side, callback) {
-        this.callbacks[side] = callback;
+        this.#callbacks[side] = callback;
     }
     /**
      * Enable the DOM events needed for mouse invokation.
@@ -116,7 +116,7 @@ export class UtilityWheel {
      * Returns a unique identifier that can be passed to {@link removeEvent}.
      *
      * @returns An identifier that can be used to remove the event in {@link removeEvent}.
-     * @see {@link EventData}
+     * @see {@link Events}
      */
     addEvent(type, callback) {
         if (!this.#events[type]) {
@@ -156,7 +156,7 @@ export class UtilityWheel {
     }
     /**
      * Manually invoke an event from the available event types with matching arguments.
-     * @see {@link EventData}
+     * @see {@link Events}
      */
     invokeEvent(type, ...args) {
         if (this.#events[type]) {
@@ -196,7 +196,7 @@ export class UtilityWheel {
     }
     /** @internal */
     _sectionUp(side, e) {
-        this.callbacks[side]?.(e);
+        this.#callbacks[side]?.(e);
     }
     // ---- Event helpers ----
     /** Hide the utility wheel and remove all temporary window events. */
