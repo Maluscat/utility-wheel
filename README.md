@@ -6,7 +6,7 @@ in [Scratchet](https://scratchet.malus.zone/).
 
 This library also provides a class that lets a user reassign the utility wheel
 using drag and drop. See [here](#UtilityWheelUIConfig) for an overview and
-[Scratchet's](https://scratchet.malus.zone/) settings for a demonstration.
+[Scratchet](https://scratchet.malus.zone/)'s settings for a demonstration.
 
 
 ## Installation
@@ -77,19 +77,70 @@ utilWheel.setSection('left', leftSideElement, () => {
 // Do this for all other sides...
 ```
 
-Afterwards, you can optionally add events. See the [docs](#docs) for a complete overview.
+Afterwards, you can add events or control the utility wheel manually,
+for example:
+```js
+utilWheel.addEvent('invoke', () => {
+  console.log("Utility wheel has been invoked!");
+});
+```
+See the [docs](#docs) for a complete overview.
 
 
 ## UtilityWheelUIConfig
-TODO
+The available class `UtilityWheelUIConfig` provides a very simple way to
+setup a front end configuration of a utility wheel using drag and drop.
+It automatically reassigns the underlying utility wheel with an action that
+a user has dropped onto a static utility wheel. You can see it in action in
+[Scratchet](https://scratchet.malus.zone/)'s settings panel.
+
+The class is a superclass of `UtilityWheel`, so it is instantiated and acts
+like a normal utility wheel. The configuration argument thereby also extends
+`UtilityWheel`'s configuration, but it does require two additional options:
+- `actionList` is a list of available actions that can be assigned to a section
+  of the utility wheel, containing a callback and element (onto which all
+  drag and drop events are added).
+- `configContainer` is a DOM Element into which the static utility wheel
+  (which is the drop target and which differs from the underlying, real utility
+  wheel) is appended.
+
+*Important*: The supplied actions' elements, which the user will be able to
+drop onto the static utility wheel, are not added to the DOM automatically.
+
+```js
+const actionList = [
+  {
+    element: document.createTextContent('action 1'),
+    callback: () => { console.log("Action 1 has been invoked!") }
+  }, {
+    element: document.createTextContent('action 2'),
+    callback: () => { console.log("Action 2 has been invoked!") }
+  }
+];
+const configContainer = /* DOM target for the static utility wheel */;
+
+const utilWheel = new UtilityWheelUIConfig(node, {
+  actionList,
+  configContainer
+  // + All optional config options of `UtilityWheel` (see above)
+});
+
+// Add the elements somewhere to the DOM so that they are exposed for dragging
+for (const { element } of actionList) {
+  document.body.appendChild(element);
+}
+```
+
+Additionally, there are a lot of custom events available that expose all possible
+invoked drag and drop events. See the [docs](#docs) for more info.
 
 
 ## Docs
-[UtilityWheel](https://docs.malus.zone/utility-wheel/#UtilityWheel.UtilityWheel).
+Overview: [UtilityWheel](https://docs.malus.zone/utility-wheel/#UtilityWheel.UtilityWheel)
 - [Configuration](https://docs.malus.zone/utility-wheel/#UtilityWheel.Config)
 - [Events](https://docs.malus.zone/utility-wheel/#UtilityWheel.Events)
 
-[UtilityWheelUIConfig](https://docs.malus.zone/utility-wheel/#UtilityWheelUIConfig.UtilityWheelUIConfig).
+Overview: [UtilityWheelUIConfig](https://docs.malus.zone/utility-wheel/#UtilityWheelUIConfig.UtilityWheelUIConfig)
 - [Configuration](https://docs.malus.zone/utility-wheel/#UtilityWheelUIConfig.Config)
 - [Events](https://docs.malus.zone/utility-wheel/#UtilityWheelUIConfig.UIEvents)
 
@@ -98,7 +149,8 @@ TODO
 Take a look at the [Less](./style/less) files for an overview of the styling.
 
 ### CSS Variables
-There are some CSS variables available which should cover most of the basic styling requirements:
+There are some CSS variables available which should cover most of the basic
+styling requirements:
 ```less
 :root {
   --utilWheel-center-color: hsl(0, 0%, 8%);
