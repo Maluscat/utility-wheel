@@ -168,5 +168,12 @@ styling requirements:
   --utilWheel-wheel-size: 27em;
   // Determines the gradient fall off of the sections
   --utilWheel-gradient-stop: 21em;
+
+  // Scale of the utility wheel content when an action is dragged over it
+  --utilWheel-dragover-scale: .92;
+  // Opacity of both a dragged action and the uw content when an action is dragged over it
+  --utilWheel-dragging-opacity: .575;
+  // Scale of a dragged action
+  --utilWheel-dragging-action-scale: .97;
 }
 ```
