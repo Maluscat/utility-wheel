@@ -8,13 +8,20 @@ export interface Config {
    */
   enable: boolean;
   /**
+   * Choose whether the utility wheel DOM target (first constructor argument)
+   * should be replaced with the utility wheel instead of acting as
+   * its parent.
+   * @default false
+   */
+  replace: boolean;
+  /**
    * The target the `pointerdown` event, that will invoke
    * the utility wheel, will be registered onto.
    * @see {@link UtilityWheel.enable} and {@link UtilityWheel.disable}
    *      for ways to control the event invokation.
    * @default window
    */
-  target: EventTarget;
+  eventTarget: EventTarget;
   /**
    * The mouse button that invokes the utility wheel on click
    * (default: right mouse button).
@@ -62,47 +69,37 @@ export class UtilityWheel {
 
   /** @see {@link Config.invokeButton} */
   invokeButton;
-  /** @see {@link Config.target} */
-  target;
+  /** @see {@link Config.eventTarget} */
+  eventTarget;
   /** The utility wheel DOM element. */
   element;
 
   /**
-   * @param element The DOM element of the base utility wheel structure.
-   *                See the provided HTML template in the `html/` folder.
+   * @param elementTarget The DOM element that the utility wheel should be appended
+   *                      into. Can also replace it (See {@link Config.replace}).
    */
-  constructor(
-    element: HTMLElement, {
-      target = window,
+  constructor(elementTarget: HTMLElement, {
+      eventTarget = window,
       invokeButton = 2,
-      enable = true
+      replace = false,
+      enable = true,
     }: Partial<Config> = {}
   ) {
-    this.target = target;
-    this.element = element;
+    this.eventTarget = eventTarget;
     this.invokeButton = invokeButton;
 
-    this.sectionsTarget = {
-      top: element.querySelector('.uw-section-target.uw-top')!,
-      right: element.querySelector('.uw-section-target.uw-right')!,
-      bottom: element.querySelector('.uw-section-target.uw-bottom')!,
-      left: element.querySelector('.uw-section-target.uw-left')!,
-    };
-    this.sectionsContent = {
-      top: element.querySelector('.uw-section-content.uw-top')!,
-      right: element.querySelector('.uw-section-content.uw-right')!,
-      bottom: element.querySelector('.uw-section-content.uw-bottom')!,
-      left: element.querySelector('.uw-section-content.uw-left')!,
-    };
+    const { contents, targets, element, indicator } =
+      UtilityWheel.createUtilityWheelElement(replace ? elementTarget : undefined);
+    this.sectionsTarget = targets;
+    this.sectionsContent = contents;
+    this.element = element;
 
     this._pointerDown = this._pointerDown.bind(this);
     this._pointerUp = this._pointerUp.bind(this);
     this._preventContextMenu = this._preventContextMenu.bind(this);
     this._keyDown = this._keyDown.bind(this);
 
-    this.element.querySelector('.uw-circle-indicator')!
-      .addEventListener('contextmenu', <any> this._preventContextMenu);
-
+    indicator.addEventListener('contextmenu', <any> this._preventContextMenu);
     for (const [ side, section ] of Object.entries(this.sectionsTarget)) {
       section.addEventListener('pointerup', this._sectionUp.bind(this, side as SectionSide));
     }
@@ -143,13 +140,13 @@ export class UtilityWheel {
    * Is called automatically in the constructor.
    */
   enable() {
-    this.target.addEventListener('pointerdown', <any> this._pointerDown);
-    this.target.addEventListener('contextmenu', <any> this._preventContextMenu);
+    this.eventTarget.addEventListener('pointerdown', <any> this._pointerDown);
+    this.eventTarget.addEventListener('contextmenu', <any> this._preventContextMenu);
   }
   /** Remove the DOM events needed for mouse invokation.  */
   disable() {
-    this.target.removeEventListener('pointerdown', <any> this._pointerDown);
-    this.target.removeEventListener('contextmenu', <any> this._preventContextMenu);
+    this.eventTarget.removeEventListener('pointerdown', <any> this._pointerDown);
+    this.eventTarget.removeEventListener('contextmenu', <any> this._preventContextMenu);
   }
 
   // ---- Visibility handling ----
@@ -269,5 +266,36 @@ export class UtilityWheel {
     window.removeEventListener('pointerup', this._pointerUp);
     window.removeEventListener('keydown', this._keyDown);
     this.hide();
+  }
+
+  /**
+   * Create a UtilityWheel DOM structure and return all
+   * relevant elements in various forms.
+   */
+  static createUtilityWheelElement(element?: HTMLElement) {
+    if (!element) element = document.createElement('div');
+    element.classList.add('utility-wheel', 'uw-hidden');
+
+    const targetContainer = document.createElement('div');
+    const contentContainer = document.createElement('div');
+    element.appendChild(targetContainer);
+    element.appendChild(contentContainer);
+
+    const targets = {} as Section<HTMLElement>;
+    const contents = {} as Section<HTMLElement>;
+    for (const side of [ 'top', 'right', 'bottom', 'left' ] as SectionSide[]) {
+      targets[side] = document.createElement('div');
+      contents[side] = document.createElement('div');
+      targets[side].classList.add('uw-section-target', `uw-${side}`);
+      contents[side].classList.add('uw-section-content', `uw-${side}`);
+      targetContainer.appendChild(targets[side]);
+      contentContainer.appendChild(contents[side]);
+    }
+
+    const indicator = document.createElement('div');
+    indicator.classList.add('uw-circle-indicator');
+    element.appendChild(indicator);
+
+    return { element, targets, contents, indicator };
   }
 }

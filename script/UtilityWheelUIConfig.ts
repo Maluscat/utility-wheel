@@ -85,16 +85,16 @@ export class UtilityWheelUIConfig extends UtilityWheel {
   /** @see {@link Config.actionList} */
   actionList;
 
-  constructor(element: HTMLElement, config: Config) {
+  constructor(elementTarget: HTMLElement, config: Config) {
     if (!config?.actionList || !config?.configContainer) {
       throw new Error(
         'UtilityWheelUIConfig @ constructor: Both the `actionList` and `configContainer` options need to be defined.');
     }
-    super(element, config);
+    super(elementTarget, config);
 
-    this.actionList = config?.actionList ?? [];
+    this.actionList = config.actionList;
 
-    this.configWheel = new UtilityWheel(element.cloneNode(true) as HTMLElement, {
+    this.configWheel = new UtilityWheel(elementTarget, {
       enable: false
     });
     this.configWheel.element.classList.add('uw-configuration-wheel');

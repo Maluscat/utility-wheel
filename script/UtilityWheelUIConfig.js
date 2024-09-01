@@ -23,13 +23,13 @@ export class UtilityWheelUIConfig extends UtilityWheel {
     configWheel;
     /** @see {@link Config.actionList} */
     actionList;
-    constructor(element, config) {
+    constructor(elementTarget, config) {
         if (!config?.actionList || !config?.configContainer) {
             throw new Error('UtilityWheelUIConfig @ constructor: Both the `actionList` and `configContainer` options need to be defined.');
         }
-        super(element, config);
-        this.actionList = config?.actionList ?? [];
-        this.configWheel = new UtilityWheel(element.cloneNode(true), {
+        super(elementTarget, config);
+        this.actionList = config.actionList;
+        this.configWheel = new UtilityWheel(elementTarget, {
             enable: false
         });
         this.configWheel.element.classList.add('uw-configuration-wheel');

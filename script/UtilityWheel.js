@@ -16,36 +16,26 @@ export class UtilityWheel {
     #events = {};
     /** @see {@link Config.invokeButton} */
     invokeButton;
-    /** @see {@link Config.target} */
-    target;
+    /** @see {@link Config.eventTarget} */
+    eventTarget;
     /** The utility wheel DOM element. */
     element;
     /**
-     * @param element The DOM element of the base utility wheel structure.
-     *                See the provided HTML template in the `html/` folder.
+     * @param elementTarget The DOM element that the utility wheel should be appended
+     *                      into. Can also replace it (See {@link Config.replace}).
      */
-    constructor(element, { target = window, invokeButton = 2, enable = true } = {}) {
-        this.target = target;
-        this.element = element;
+    constructor(elementTarget, { eventTarget = window, invokeButton = 2, replace = false, enable = true, } = {}) {
+        this.eventTarget = eventTarget;
         this.invokeButton = invokeButton;
-        this.sectionsTarget = {
-            top: element.querySelector('.uw-section-target.uw-top'),
-            right: element.querySelector('.uw-section-target.uw-right'),
-            bottom: element.querySelector('.uw-section-target.uw-bottom'),
-            left: element.querySelector('.uw-section-target.uw-left'),
-        };
-        this.sectionsContent = {
-            top: element.querySelector('.uw-section-content.uw-top'),
-            right: element.querySelector('.uw-section-content.uw-right'),
-            bottom: element.querySelector('.uw-section-content.uw-bottom'),
-            left: element.querySelector('.uw-section-content.uw-left'),
-        };
+        const { contents, targets, element, indicator } = UtilityWheel.createUtilityWheelElement(replace ? elementTarget : undefined);
+        this.sectionsTarget = targets;
+        this.sectionsContent = contents;
+        this.element = element;
         this._pointerDown = this._pointerDown.bind(this);
         this._pointerUp = this._pointerUp.bind(this);
         this._preventContextMenu = this._preventContextMenu.bind(this);
         this._keyDown = this._keyDown.bind(this);
-        this.element.querySelector('.uw-circle-indicator')
-            .addEventListener('contextmenu', this._preventContextMenu);
+        indicator.addEventListener('contextmenu', this._preventContextMenu);
         for (const [side, section] of Object.entries(this.sectionsTarget)) {
             section.addEventListener('pointerup', this._sectionUp.bind(this, side));
         }
@@ -84,13 +74,13 @@ export class UtilityWheel {
      * Is called automatically in the constructor.
      */
     enable() {
-        this.target.addEventListener('pointerdown', this._pointerDown);
-        this.target.addEventListener('contextmenu', this._preventContextMenu);
+        this.eventTarget.addEventListener('pointerdown', this._pointerDown);
+        this.eventTarget.addEventListener('contextmenu', this._preventContextMenu);
     }
     /** Remove the DOM events needed for mouse invokation.  */
     disable() {
-        this.target.removeEventListener('pointerdown', this._pointerDown);
-        this.target.removeEventListener('contextmenu', this._preventContextMenu);
+        this.eventTarget.removeEventListener('pointerdown', this._pointerDown);
+        this.eventTarget.removeEventListener('contextmenu', this._preventContextMenu);
     }
     // ---- Visibility handling ----
     /**
@@ -204,5 +194,32 @@ export class UtilityWheel {
         window.removeEventListener('pointerup', this._pointerUp);
         window.removeEventListener('keydown', this._keyDown);
         this.hide();
+    }
+    /**
+     * Create a UtilityWheel DOM structure and return all
+     * relevant elements in various forms.
+     */
+    static createUtilityWheelElement(element) {
+        if (!element)
+            element = document.createElement('div');
+        element.classList.add('utility-wheel', 'uw-hidden');
+        const targetContainer = document.createElement('div');
+        const contentContainer = document.createElement('div');
+        element.appendChild(targetContainer);
+        element.appendChild(contentContainer);
+        const targets = {};
+        const contents = {};
+        for (const side of ['top', 'right', 'bottom', 'left']) {
+            targets[side] = document.createElement('div');
+            contents[side] = document.createElement('div');
+            targets[side].classList.add('uw-section-target', `uw-${side}`);
+            contents[side].classList.add('uw-section-content', `uw-${side}`);
+            targetContainer.appendChild(targets[side]);
+            contentContainer.appendChild(contents[side]);
+        }
+        const indicator = document.createElement('div');
+        indicator.classList.add('uw-circle-indicator');
+        element.appendChild(indicator);
+        return { element, targets, contents, indicator };
     }
 }
