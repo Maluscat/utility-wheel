@@ -61,9 +61,10 @@ const utilWheel = new UtilityWheel(node);
 You can also provide options (here with the defaults):
 ```js
 const utilWheel = new UtilityWheel(node, {
-  enable: true,
-  target: window,
-  invokeButton: 2
+  enable: true, // Enable the utility wheel by default
+  target: window, // Pointer event target
+  replace: false, // Replace given container with utility wheel instead of appending
+  invokeButton: 2 // Mouse button that invokes the utility wheel
 });
 ```
 
@@ -91,21 +92,22 @@ See the [docs](#docs) for a complete overview.
 The available class `UtilityWheelUIConfig` provides a very simple way to
 setup a front end configuration of a utility wheel using drag and drop.
 It automatically reassigns the underlying utility wheel with an action that
-a user has dropped onto a static utility wheel. You can see it in action in
-[Scratchet](https://scratchet.malus.zone/)'s settings panel.
+a user has dropped onto a static utility wheel ("configuration wheel").
+You can see it in action in [Scratchet](https://scratchet.malus.zone/)'s
+settings panel.
 
 The class is a superclass of `UtilityWheel`, so it is instantiated and acts
 like a normal utility wheel. The configuration argument thereby also extends
 `UtilityWheel`'s configuration, but it does require two additional options:
-- `actionList` is a list of available actions that can be assigned to a section
-  of the utility wheel, containing a callback and element (onto which all
-  drag and drop events are added).
+- `actionList` is an array of available actions that can be assigned to a
+  section of the utility wheel, containing a callback and element (onto which
+  all drag and drop events are added).
 - `configContainer` is a DOM Element into which the static utility wheel
   (which is the drop target and which differs from the underlying, real utility
   wheel) is appended.
 
 *Important*: The supplied actions' elements, which the user will be able to
-drop onto the static utility wheel, are not added to the DOM automatically.
+drop onto the static utility wheel, are **not** added to the DOM by the library.
 
 ```js
 const actionList = [
@@ -117,7 +119,7 @@ const actionList = [
     callback: () => { console.log("Action 2 has been invoked!") }
   }
 ];
-const configContainer = /* DOM target for the static utility wheel */;
+const configContainer = document.getElementbyId('settings');
 
 const utilWheel = new UtilityWheelUIConfig(node, {
   actionList,
@@ -125,7 +127,9 @@ const utilWheel = new UtilityWheelUIConfig(node, {
   // + All optional config options of `UtilityWheel` (see above)
 });
 
-// Add the elements somewhere to the DOM so that they are exposed for dragging
+// Since we have just created the action elements,
+// they now need to be added to the DOM manually.
+// Instead, they also could have been fetched from the DOM.
 for (const { element } of actionList) {
   document.body.appendChild(element);
 }
@@ -133,6 +137,18 @@ for (const { element } of actionList) {
 
 Additionally, there are a lot of custom events available that expose all possible
 invoked drag and drop events. See the [docs](#docs) for more info.
+
+### DOM & CSS
+The `UtilityWheelUIConfig` adds some useful classes to relevant elements:
+- `uw-action` to all specified action elements
+- `uw-dragging` to an action element that is currently being dragged
+- `uw-dragover` to the configuration wheel's content and target elements
+   if there is an action being dragged over their specific section
+- `uw-is-dragging` to the body if an action is currently being dragged
+
+Additionally, there are a few lines of CSS that utilize these classes and add
+some simple, interactive styling to the configuration wheel and actions. This is
+easily overridable and can be configured via [CSS variables](#css-variables).
 
 
 ## Docs
