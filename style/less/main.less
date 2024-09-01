@@ -9,6 +9,10 @@
   --utilWheel-center-size: 6em;
   --utilWheel-wheel-size: 27em;
   --utilWheel-gradient-stop: 21em;
+
+  --utilWheel-dragover-scale: .92;
+  --utilWheel-dragging-opacity: .575;
+  --utilWheel-dragging-action-scale: .97;
 }
 
 .utility-wheel {
@@ -86,4 +90,23 @@
     border: @border-style;
     transform: translate(-50%, -50%);
   }
+}
+
+/* UtilityWheelUIConfig */
+.uw-action {
+  cursor: grab;
+  &.uw-dragging {
+    transform: scale(var(--utilWheel-dragging-action-scale));
+    opacity: var(--utilWheel-dragging-opacity);
+  }
+}
+.uw-section-content.uw-dragover > * {
+  transform: scale(var(--utilWheel-dragover-scale));
+  opacity: var(--utilWheel-dragging-opacity);
+}
+.uw-action,
+.uw-section-content.uw-dragover > * {
+  transition:
+    transform .085s ease,
+    color .1s ease-in-out;
 }

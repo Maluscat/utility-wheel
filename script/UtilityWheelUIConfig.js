@@ -36,6 +36,7 @@ export class UtilityWheelUIConfig extends UtilityWheel {
         config.configContainer.appendChild(this.configWheel.element);
         this.actionList.forEach(({ element }, i) => {
             element.draggable = true;
+            element.classList.add('uw-action');
             element.addEventListener('dragstart', this.#dragStart.bind(this, i, element));
             element.addEventListener('dragend', this.#dragEnd.bind(this, i, element));
         });

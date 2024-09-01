@@ -5,6 +5,9 @@
   --utilWheel-center-size: 6em;
   --utilWheel-wheel-size: 27em;
   --utilWheel-gradient-stop: 21em;
+  --utilWheel-dragover-scale: 0.92;
+  --utilWheel-dragging-opacity: 0.575;
+  --utilWheel-dragging-action-scale: 0.97;
 }
 .utility-wheel {
   position: absolute;
@@ -78,4 +81,20 @@
   background-color: var(--utilWheel-center-color);
   border: 2px solid var(--utilWheel-border-color);
   transform: translate(-50%, -50%);
+}
+/* UtilityWheelUIConfig */
+.uw-action {
+  cursor: grab;
+}
+.uw-action.uw-dragging {
+  transform: scale(var(--utilWheel-dragging-action-scale));
+  opacity: var(--utilWheel-dragging-opacity);
+}
+.uw-section-content.uw-dragover > * {
+  transform: scale(var(--utilWheel-dragover-scale));
+  opacity: var(--utilWheel-dragging-opacity);
+}
+.uw-action,
+.uw-section-content.uw-dragover > * {
+  transition: transform 0.085s ease, color 0.1s ease-in-out;
 }
