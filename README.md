@@ -40,27 +40,16 @@ The required files are in `./script` (TS/JS) and `./style` (CSS).
 
 
 ## Getting started
-### Prerequisites
-UtilityWheel does not build its DOM for you. You will need to include or build
-it manually. See the [provided snippet](./html/snippet.html) for the required
-HTML structure. This snippet can be used with any template engine for easy inclusion.
-
-It is also pretty safe to just copy and paste the snippet into your document.
-The library is stable at this point and the DOM structure is unlikely to be
-changed in the foreseeable future. 
-
-
-### Constructor & methods
-Instantiate the provided `UtilityWheel` class with the DOM element of its
-HTML structure (see above).
+Instantiate the provided `UtilityWheel` class with the DOM element that the
+utility wheel element should be appended into (can also be fully replaced).
 ```js
-const node = document.querySelector('.utility-wheel');
-const utilWheel = new UtilityWheel(node);
+const target = document.querySelector('.utility-wheel-container');
+const utilWheel = new UtilityWheel(target);
 ```
 
 You can also provide options (here with the defaults):
 ```js
-const utilWheel = new UtilityWheel(node, {
+const utilWheel = new UtilityWheel(target, {
   enable: true, // Enable the utility wheel by default
   target: window, // Pointer event target
   replace: false, // Replace given container with utility wheel instead of appending
@@ -121,7 +110,7 @@ const actionList = [
 ];
 const configContainer = document.getElementbyId('settings');
 
-const utilWheel = new UtilityWheelUIConfig(node, {
+const utilWheel = new UtilityWheelUIConfig(target, {
   actionList,
   configContainer
   // + All optional config options of `UtilityWheel` (see above)
