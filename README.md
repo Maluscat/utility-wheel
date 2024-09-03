@@ -10,14 +10,21 @@ using drag and drop. See [here](#UtilityWheelUIConfig) for an overview and
 
 
 ## Installation
-UtilityWheel isn't on any package manager. It has a rolling release model, which
-means that you can always fetch the files from the `main` branch of this repository.
+Since I don't have much more to add to this library, there won't be many more
+updates in the future.
+However, if you have feedback or any ideas for improvement, consider opening
+an issue or pull request!
 
 ### Download
 Download the required JavaScript and CSS files from [`./script`](./script)
 and [`./style`](./style) respectively and include them into your project.
+Every JavaScript file comes with a respective TypeScript file that can be used
+for type checking.
 
-If you want type checking, you'll need to fetch the TypeScript files in `./script` as well.
+### Package manager
+This library isn't on any package manager, but you can use your favorite package
+manager's *Git resolution strategy* ([Yarn](https://yarnpkg.com/cli/add),
+[npm](https://docs.npmjs.com/cli/v6/commands/npm-install)) to import it.
 
 ### Git submodules
 If your project is a Git repository already, you can easily use
@@ -151,7 +158,9 @@ Overview: [UtilityWheelUIConfig](https://docs.malus.zone/utility-wheel/#UtilityW
 
 
 ## Styling
-Take a look at the [Less](./style/less) files for an overview of the styling.
+You can take a look at the [Less](./style/less) files to get an overview of
+the default styling. It is very minimal and can thus easily be overridden
+and extended!
 
 ### CSS Variables
 There are some CSS variables available which should cover most of the basic
