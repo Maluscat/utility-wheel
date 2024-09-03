@@ -5,7 +5,7 @@ It is a more sophisticated version of
 in [Scratchet](https://scratchet.malus.zone/).
 
 This library also provides a class that lets a user reassign the utility wheel
-using drag and drop. See [here](#UtilityWheelUIConfig) for an overview and
+using drag and drop. See [here](#utilitywheeluiconfig) for an overview and
 [Scratchet](https://scratchet.malus.zone/)'s settings for a demonstration.
 
 
