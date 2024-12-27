@@ -3,10 +3,18 @@
     "target": "esnext",
     "module": "esnext",
     "lib": [ "esnext", "dom", "dom.iterable" ],
+
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+
     "strict": true,
     "alwaysStrict": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+
+    "declaration": true,
+    "newLine": "LF"
   },
   "files": [
     "./script/UtilityWheel.ts",

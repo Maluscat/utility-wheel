@@ -187,20 +187,20 @@ export class UtilityWheelUIConfig extends UtilityWheel {
   }
 
   // ---- Overrides ----
-  setSection(side: SectionSide, element: HTMLElement, callback: SectionCallback) {
+  override setSection(side: SectionSide, element: HTMLElement, callback: SectionCallback) {
     super.setSection(side, element, callback);
     this.configWheel.setSectionContent(side, element.cloneNode(true) as HTMLElement);
   }
 
-  addEvent<T extends keyof UIEvents>(type: T, callback: UIEvents[T]) {
+  override addEvent<T extends keyof UIEvents>(type: T, callback: UIEvents[T]) {
     // @ts-ignore
     return super.addEvent(...arguments);
   }
-  removeEvent<T extends keyof UIEvents>(key: number | T | UIEvents[keyof Events]) {
+  override removeEvent<T extends keyof UIEvents>(key: number | T | UIEvents[keyof Events]) {
     // @ts-ignore
     return super.removeEvent(...arguments);
   }
-  invokeEvent<T extends keyof UIEvents>(type: T, ...args: Parameters<UIEvents[T]>) {
+  override invokeEvent<T extends keyof UIEvents>(type: T, ...args: Parameters<UIEvents[T]>) {
     // @ts-ignore
     return super.invokeEvent(...arguments);
   }
