@@ -69,15 +69,16 @@ export class UtilityWheelUIConfig extends UtilityWheel {
         element.classList.remove('uw-dragging');
         document.body.classList.remove('uw-is-dragging');
     }
-    #dropElement(contentElem, side, e) {
+    #dropElement(contentElem, sectionSide, e) {
         e.preventDefault();
         const actionIndex = Number(e.dataTransfer.getData('text/plain'));
         const { element, callback } = this.actionList[actionIndex];
         this.#dragEnd(actionIndex, element, e);
         this.#dragLeave(contentElem, e);
-        this.setSection(side, element.cloneNode(true), callback);
+        this.setSection(sectionSide, element.cloneNode(true), callback);
         this.invokeEvent('drop', {
             evt: e,
+            sectionSide,
             actionIndex,
             actionElem: element,
             contentElem,

@@ -14,7 +14,7 @@ export interface UIEvents extends Events {
   dragEnter: (args: {evt: DragEvent, contentElem: HTMLElement, targetElem: HTMLElement}) => void;
   dragLeave: (args: {evt: DragEvent, contentElem: HTMLElement, targetElem: HTMLElement}) => void;
   drop: (args: {evt: DragEvent, contentElem: HTMLElement, targetElem: HTMLElement,
-         actionElem: HTMLElement, actionIndex: number}) => void;
+         sectionSide: SectionSide, actionElem: HTMLElement, actionIndex: number}) => void;
 }
 
 /**
@@ -138,17 +138,18 @@ export class UtilityWheelUIConfig extends UtilityWheel {
     element.classList.remove('uw-dragging');
     document.body.classList.remove('uw-is-dragging');
   }
-  #dropElement(contentElem: HTMLElement, side: SectionSide, e: DragEvent) {
+  #dropElement(contentElem: HTMLElement, sectionSide: SectionSide, e: DragEvent) {
     e.preventDefault();
     const actionIndex = Number(e.dataTransfer!.getData('text/plain'));
     const { element, callback } = this.actionList[actionIndex];
 
     this.#dragEnd(actionIndex, element, e);
     this.#dragLeave(contentElem, e);
-    this.setSection(side, element.cloneNode(true) as HTMLElement, callback);
+    this.setSection(sectionSide, element.cloneNode(true) as HTMLElement, callback);
 
     this.invokeEvent('drop', {
       evt: e,
+      sectionSide,
       actionIndex,
       actionElem: element,
       contentElem,
